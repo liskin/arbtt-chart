@@ -37,7 +37,8 @@ def has_meaningful_data(table):
 
 def extract_category(table):
     [category] = table.index.str.extract(r'^([\w-]+):', expand=False).dropna().unique()
-    return category, table.rename(lambda s: s.removeprefix(category + ':'))
+    prefix = category + ":"
+    return category, table.rename(lambda s: s[len(prefix) if s.startswith(prefix) else 0:])
 
 
 def load_inputs(csvs):
