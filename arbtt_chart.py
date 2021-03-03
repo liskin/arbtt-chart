@@ -6,8 +6,8 @@ from io import StringIO
 from shutil import get_terminal_size
 from sys import stdin
 
-import numpy as np
-import pandas as pd
+import numpy as np  # type: ignore [import]
+import pandas as pd  # type: ignore [import]
 
 
 def read_blank_separated_stdin():
@@ -222,4 +222,9 @@ def bartable(inputs):
     return output.to_string(header=False)
 
 
-print(bartable(load_inputs()))
+def main():
+    print(bartable(load_inputs()))
+
+
+if __name__ == "__main__":
+    main()
