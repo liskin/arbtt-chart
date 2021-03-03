@@ -2,6 +2,10 @@
 
 **Textual chart for [arbtt][], the automatic, rule-based time tracker.**
 
+[![PyPI Python Version badge](https://img.shields.io/pypi/pyversions/arbtt-chart)](https://pypi.org/project/arbtt-chart/)
+[![PyPI Version badge](https://img.shields.io/pypi/v/arbtt-chart)](https://pypi.org/project/arbtt-chart/)
+![License badge](https://img.shields.io/github/license/liskin/arbtt-chart)
+
 Similar to [arbtt-graph][], just in plain monospace text.
 
 ![demo](https://user-images.githubusercontent.com/300342/109856066-57afba80-7c59-11eb-8771-9612ce478945.png)
