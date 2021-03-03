@@ -22,9 +22,13 @@ Raw `arbtt-stats` output for the same time period looks something like this:
 
 1. [Install arbtt](http://arbtt.nomeata.de/#install) and make sure
    `arbtt-capture` runs in your graphical login session.
-2. Set up some rules. See [Configuring the arbtt categorizer][], [Effective
-   Use of Arbtt][], and [sample categorize.cfg for arbtt-graph][].
+
+2. Configure arbtt rules in `~/.arbtt/categorize.cfg`.
+   See [Configuring the arbtt categorizer][], [Effective Use of Arbtt][], and
+   [sample categorize.cfg for arbtt-graph][].
+
 3. [Install arbtt-chart](#installation).
+
 4. Try `arbtt-stats --output-format=csv --each-category | arbtt-chart` or
    `arbtt-stats --output-format=csv --category=Graph | arbtt-chart`
 
@@ -59,6 +63,18 @@ pip install git+https://github.com/liskin/arbtt-chart
 
 ## Usage
 
-* TODO: `./arbtt_chart.py --help`
+    $ arbtt-chart --help
+    usage: arbtt-chart [-h] [--no-stacked] [--subtags] [--totals-re RE]
+    
+    Plot charts from arbtt-stats to terminal. Expects `arbtt-stats --output-
+    format=csv --category=…` or `arbtt-stats --output-format=csv --each-category`
+    output on stdin.
+    
+    optional arguments:
+      -h, --help      show this help message and exit
+      --no-stacked    don't stack bar chart
+      --subtags       recognize subtags (separated by '-') and sort them together
+      --totals-re RE  totals row regexp, default: ^\(total time\)$
+
 * TODO: examples of input and output
 * TODO: example of external data source

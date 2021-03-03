@@ -44,6 +44,12 @@ lint-isort: $(VENV_DONE)
 test: $(VENV_DONE)
 	$(VENV_PYTHON) -m pytest $(PYTEST_FLAGS) tests/
 
+.PHONY: readme
+readme: INTERACTIVE=$(shell [ -t 0 ] && echo --interactive)
+readme: $(VENV_DONE)
+	PATH="$(CURDIR)/$(VENV)/bin:$$PATH" \
+	$(VENV_PYTHON) cram-noescape.py --indent=4 $(INTERACTIVE) README.md
+
 .PHONY: dist
 dist: $(VENV_DONE)
 	rm -rf dist/
