@@ -23,6 +23,9 @@ def test_load_inputs():
     # no meaningful data
     assert ld(["""
                Tag,Time
+               """]) == {}
+    assert ld(["""
+               Tag,Time
                _,00:00:00
                """]) == {}
 

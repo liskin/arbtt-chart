@@ -32,7 +32,7 @@ def read_csv(inp):
 
 def has_meaningful_data(table):
     total = table['Time'].sum()
-    return not pd.isna(total) and total.total_seconds() > 0
+    return not table.empty and not pd.isna(total) and total.total_seconds() > 0
 
 
 def extract_category(table):
