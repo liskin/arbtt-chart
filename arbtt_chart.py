@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 from collections import namedtuple
 from functools import reduce
 from io import StringIO
@@ -58,8 +59,8 @@ def load_inputs():
 Preprocessed = namedtuple('Preprocessed', 'category time_sum table table_totals')
 
 
-def preprocess(category, table, subtags=True, totals_re=r'^\(screen\)'):
-    if subtags:
+def preprocess(category, table, args):
+    if args.subtags:
         table = table.set_index(pd.MultiIndex.from_frame(
             table.index.str.extract(r'^(\(.*\)$|\w*)-?(.*)'),
             names=['Tag', 'SubTag']))
@@ -70,7 +71,7 @@ def preprocess(category, table, subtags=True, totals_re=r'^\(screen\)'):
     table.drop('TimeTag', axis='columns', inplace=True)
 
     # separate total(-ish) rows
-    totals_m = table.index.get_level_values('Tag').str.contains(totals_re)
+    totals_m = table.index.get_level_values('Tag').str.contains(args.totals_re)
     table, table_totals = table[~totals_m], table[totals_m]
 
     time_sum = table['Time'].sum()
@@ -90,9 +91,9 @@ def blank(df):
     return pd.DataFrame({'Time': [''], 'Type': ['text']}, index=index)
 
 
-def prepare_bartable(time_total, prep, stacked=True):
+def prepare_bartable(time_total, prep, args):
     table = prep.table.assign(Frac=prep.table['Time'] / time_total)
-    table['FracAbove'] = table['Frac'].shift(1, fill_value=0).cumsum() if stacked else 0
+    table['FracAbove'] = table['Frac'].shift(1, fill_value=0).cumsum() if args.stacked else 0
     table['Time'] = table['Time'].map(fmt_time)
     table['Type'] = 'bar'
 
@@ -207,17 +208,17 @@ def bar(width, hour_frac, r):
     return bar
 
 
-def bartable(inputs):
+def bartable(inputs, args):
     if not inputs:
         return '(no meaningful inputs)'
 
-    preprocessed = [preprocess(category, table) for category, table in inputs.items()]
+    preprocessed = [preprocess(category, table, args=args) for category, table in inputs.items()]
     time_total = max(prep.time_sum for prep in preprocessed)
     hour_frac = pd.to_timedelta('01:00:00') / time_total
 
     table = reduce(
         lambda a, b: pd.concat([a, blank(a), b]),
-        (prepare_bartable(time_total, prep) for prep in preprocessed)
+        (prepare_bartable(time_total, prep, args=args) for prep in preprocessed)
     )
 
     width = setup_width()
@@ -225,8 +226,33 @@ def bartable(inputs):
     return output.to_string(header=False)
 
 
-def main():
-    print(bartable(load_inputs()))
+def parse_cmdline_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="""
+        Plot charts from arbtt-stats to terminal.
+        Expects `arbtt-stats --output-format=csv --category=…` or
+        `arbtt-stats --output-format=csv --each-category` output on stdin.
+        """,
+    )
+    parser.add_argument(
+        '--no-stacked', dest='stacked', action='store_false',
+        help="don't stack bar chart",
+    )
+    parser.add_argument(
+        '--subtags', dest='subtags', action='store_true',
+        help="recognize subtags (separated by '-') and sort them together",
+    )
+    totals_re_default = r'^\(total time\)$'
+    parser.add_argument(
+        '--totals-re', dest='totals_re', default=totals_re_default,
+        help=f"totals row regexp, default: {totals_re_default}", metavar='RE',
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_cmdline_args()
+    print(bartable(load_inputs(), args=args))
 
 
 if __name__ == "__main__":
