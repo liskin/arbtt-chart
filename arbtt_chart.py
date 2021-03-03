@@ -11,8 +11,8 @@ import numpy as np  # type: ignore [import]
 import pandas as pd  # type: ignore [import]
 
 
-def read_blank_separated_stdin():
-    return filter(None, (s.lstrip("\n") for s in stdin.read().split("\n\n")))
+def read_blank_separated(f):
+    return filter(None, (s.strip("\n") for s in f.read().split("\n\n")))
 
 
 def read_csv(inp):
@@ -40,9 +40,9 @@ def extract_category(table):
     return category, table.rename(lambda s: s.removeprefix(category + ':'))
 
 
-def load_inputs():
+def load_inputs(csvs):
     inputs = {}
-    for csv in read_blank_separated_stdin():
+    for csv in csvs:
         table = read_csv(csv)
         if not has_meaningful_data(table):
             continue
@@ -91,14 +91,18 @@ def blank(df):
     return pd.DataFrame({'Time': [''], 'Type': ['text']}, index=index)
 
 
-def prepare_bartable(time_total, prep, args):
+def prepare_one_bartable(time_total, prep, args):
+    hour_frac = pd.to_timedelta('01:00:00') / time_total
+
     table = prep.table.assign(Frac=prep.table['Time'] / time_total)
     table['FracAbove'] = table['Frac'].shift(1, fill_value=0).cumsum() if args.stacked else 0
+    table['HourFrac'] = hour_frac
     table['Time'] = table['Time'].map(fmt_time)
     table['Type'] = 'bar'
 
     table_totals = prep.table_totals.assign(Frac=prep.table_totals['Time'] / time_total)
     table_totals['FracAbove'] = 0
+    table_totals['HourFrac'] = hour_frac
     table_totals['Time'] = table_totals['Time'].map(fmt_time)
     table_totals['Type'] = 'total_bar'
 
@@ -112,7 +116,18 @@ def prepare_bartable(time_total, prep, args):
     return pd.concat([header_line1, header_line2, table, table_totals])
 
 
-def draw_bartable(width, hour_frac, table):
+def prepare_bartables(inputs, args):
+    preprocessed = [preprocess(category, table, args=args)
+                    for category, table in inputs.items()]
+    time_total = max(prep.time_sum for prep in preprocessed)
+
+    return reduce(
+        lambda a, b: pd.concat([a, blank(a), b]),
+        (prepare_one_bartable(time_total, prep, args=args) for prep in preprocessed)
+    )
+
+
+def draw_bartables(width, table):
     for level in table.index.names:
         width -= table.index.get_level_values(level).str.len().max() + 1
     width -= 1
@@ -120,7 +135,7 @@ def draw_bartable(width, hour_frac, table):
     time_col = table['Time']
     width -= time_col.str.len().max() + 2
 
-    bar_col = table.apply(lambda r: bar(width, hour_frac, r), axis=1)
+    bar_col = table.apply(lambda r: bar(width, r), axis=1)
 
     out = pd.DataFrame({'Time': time_col, '': bar_col})
     out.index.names = [None for _ in out.index.names]
@@ -147,20 +162,17 @@ def strfdelta(tdelta, fmt):
     return fmt.format(**d)
 
 
-def bar(width, hour_frac, r):
+def bar(width, r):
     if r.Type == 'text':
         return ''
-
-    left_pad_frac = r.FracAbove
-    bar_frac = r.Frac
 
     # characters
     bar_char_pad = "·"
     bar_chars_left = "▏▎▍▌▋▊▉█"
     bar_chars_right = "▕▐"
 
-    left_pad_width = left_pad_frac * width
-    bar_width = bar_frac * width
+    left_pad_width = r.FracAbove * width
+    bar_width = r.Frac * width
 
     # left pad
     left_pad_width_full = int(left_pad_width)
@@ -196,8 +208,8 @@ def bar(width, hour_frac, r):
     bar = left_pad + bar + right_pad
 
     # hour markers
-    if hour_frac * width > 2:
-        for hour in np.arange(hour_frac, 1, hour_frac):
+    if r.HourFrac * width > 2:
+        for hour in np.arange(r.HourFrac, 1, r.HourFrac):
             hour_col = int(hour * width)
             if hour_col < len(bar):
                 if bar[hour_col] == bar_char_pad:
@@ -208,25 +220,7 @@ def bar(width, hour_frac, r):
     return bar
 
 
-def bartable(inputs, args):
-    if not inputs:
-        return '(no meaningful inputs)'
-
-    preprocessed = [preprocess(category, table, args=args) for category, table in inputs.items()]
-    time_total = max(prep.time_sum for prep in preprocessed)
-    hour_frac = pd.to_timedelta('01:00:00') / time_total
-
-    table = reduce(
-        lambda a, b: pd.concat([a, blank(a), b]),
-        (prepare_bartable(time_total, prep, args=args) for prep in preprocessed)
-    )
-
-    width = setup_width()
-    output = draw_bartable(width=width, hour_frac=hour_frac, table=table)
-    return output.to_string(header=False)
-
-
-def parse_cmdline_args() -> argparse.Namespace:
+def parse_cmdline_args(*args) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="""
         Plot charts from arbtt-stats to terminal.
@@ -247,12 +241,20 @@ def parse_cmdline_args() -> argparse.Namespace:
         '--totals-re', dest='totals_re', default=totals_re_default,
         help=f"totals row regexp, default: {totals_re_default}", metavar='RE',
     )
-    return parser.parse_args()
+    return parser.parse_args(*args)
 
 
 def main() -> None:
     args = parse_cmdline_args()
-    print(bartable(load_inputs(), args=args))
+
+    inputs = load_inputs(read_blank_separated(stdin))
+    if not inputs:
+        print('(no meaningful inputs)')
+        exit()
+
+    bartables = prepare_bartables(inputs, args)
+    output = draw_bartables(width=setup_width(), table=bartables)
+    print(output.to_string(header=False))
 
 
 if __name__ == "__main__":
