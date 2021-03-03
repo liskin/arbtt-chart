@@ -34,12 +34,12 @@ def test_prepare():
     # same, different totals
     in1_totals = """
         Tag,Time
-        a:x,00:01:00
+        a:x-y,00:01:00
         (unmatched),00:02:00
         (screen),00:03:00
         """
     out1_totals = out1.set_index(
-        pd.Index(['a', '═', '(unmatched)', 'x', '', '(screen)'], name='Tag'))
+        pd.Index(['a', '═', '(unmatched)', 'x-y', '', '(screen)'], name='Tag'))
     pdt.assert_frame_equal(
         prep([in1_totals], args=["--totals-re", "^\\(screen"]),
         out1_totals)
@@ -64,3 +64,23 @@ def test_prepare():
     out2 = out1.set_index(
         pd.Index(['b', '═', '(unmatched time)', 'z', '', '(total time)'], name='Tag'))
     pdt.assert_frame_equal(prep([in1, in2]), pd.concat([out1, blank, out2]))
+
+    # three categories, subtags
+    in3 = """
+        Tag,Time
+        c:z,00:01:00
+        (unmatched time),00:02:00
+        (total time),00:03:00
+        """
+    out2_subtags = out1.set_index(
+        pd.MultiIndex.from_tuples(
+            [('b', ''), ('═', ''), ('(unmatched time)', ''), ('z', ''), ('', ''), ('(total time)', '')],
+            names=['Tag', 'SubTag']))
+    out3_subtags = out1.set_index(
+        pd.MultiIndex.from_tuples(
+            [('c', ''), ('═', ''), ('(unmatched time)', ''), ('z', ''), ('', ''), ('(total time)', '')],
+            names=['Tag', 'SubTag']))
+    blank_subtags = blank.set_index(pd.MultiIndex.from_tuples([('', '')], names=['Tag', 'SubTag']))
+    pdt.assert_frame_equal(
+        prep([in1, in2, in3], args=["--subtags"]),
+        pd.concat([out1_subtags, blank_subtags, out2_subtags, blank_subtags, out3_subtags]))

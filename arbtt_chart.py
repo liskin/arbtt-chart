@@ -88,7 +88,7 @@ def blank(df):
     else:
         raise Exception(f"blank: unexpected type ({type(some_name)})")
 
-    index = df.index.reindex([name])[0]
+    index = df.index.take([0]).reindex([name])[0]
     return pd.DataFrame({'Time': [''], 'Type': ['text']}, index=index)
 
 
