@@ -167,7 +167,10 @@ def bar(width, hour_frac, r):
     left_pad = left_pad_width_full * bar_char_pad
 
     # bar starts by a right half/eighth block if left pad rounds up
-    if left_pad_width_sub > 3:
+    if left_pad_width_sub > 5:
+        bar = bar_chars_right[0]
+        bar_width -= 0.25
+    elif left_pad_width_sub > 3:
         if bar_width > 0.5:
             bar = bar_chars_right[1]
             bar_width -= 0.5
