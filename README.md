@@ -63,7 +63,11 @@ provides, feel free to just:
 pip install git+https://github.com/liskin/arbtt-chart
 ```
 
+Or, since the only dependency is [pandas][], you can just `sudo apt install
+python3-pandas` and run `arbtt_chart.py` directly. :-)
+
 [pipx]: https://github.com/pipxproject/pipx
+[pandas]: https://pandas.pydata.org/
 
 ## Usage
 
