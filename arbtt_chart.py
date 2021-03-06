@@ -138,9 +138,7 @@ def draw_bartables(width, table):
 
     bar_col = table.apply(lambda r: bar(width, r), axis=1)
 
-    out = pd.DataFrame({'Time': time_col, '': bar_col})
-    out.index.names = [None for _ in out.index.names]
-    return out
+    return pd.DataFrame({'Time': time_col, 'Bar': bar_col})
 
 
 def setup_width():
@@ -255,7 +253,7 @@ def main() -> None:
 
     bartables = prepare_bartables(inputs, args)
     output = draw_bartables(width=setup_width(), table=bartables)
-    print(output.to_string(header=False))
+    print(output.to_string(header=False, index_names=False))
 
 
 if __name__ == "__main__":
