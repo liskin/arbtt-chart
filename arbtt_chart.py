@@ -2,10 +2,12 @@
 
 import argparse
 from collections import namedtuple
+import curses
 from functools import reduce
 from io import StringIO
 from shutil import get_terminal_size
 from sys import stdin
+from sys import stdout
 
 import numpy as np  # type: ignore [import]
 import pandas as pd  # type: ignore [import]
@@ -219,6 +221,21 @@ def bar(width, r):
     return bar
 
 
+def alternating_bg(output):
+    if stdout.isatty():
+        curses.setupterm()
+        if curses.tigetnum("colors") == 256:
+            c0 = curses.tigetstr('sgr0').decode()
+            c1 = curses.tparm(curses.tigetstr('setab'), 236).decode()
+            c2 = curses.tparm(curses.tigetstr('setab'), 232).decode()
+
+            return "\n".join(
+                (c1 if i % 2 else c2) + line + c0
+                for i, line in enumerate(output.split("\n")))
+
+    return output
+
+
 def parse_cmdline_args(*args) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="""
@@ -248,12 +265,11 @@ def main() -> None:
 
     inputs = load_inputs(read_blank_separated(stdin))
     if not inputs:
-        print('(no meaningful inputs)')
-        exit()
+        return print('(no meaningful inputs)')
 
     bartables = prepare_bartables(inputs, args)
     output = draw_bartables(width=setup_width(), table=bartables)
-    print(output.to_string(header=False, index_names=False))
+    print(alternating_bg(output.to_string(header=False, index_names=False)))
 
 
 if __name__ == "__main__":
