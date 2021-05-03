@@ -3,7 +3,7 @@ import textwrap
 
 import pandas as pd  # type: ignore [import]
 import pandas.testing as pdt  # type: ignore [import]
-import pytest
+import pytest  # type: ignore [import]
 
 import arbtt_chart as ac
 

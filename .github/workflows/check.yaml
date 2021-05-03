@@ -62,3 +62,69 @@ jobs:
           run: make test
       - name: readme
         run: make readme
+
+  check-distro:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - 'debian:unstable'
+          - 'debian:bullseye'
+          - 'ubuntu:20.04'
+          - 'ubuntu:20.10'
+          - 'ubuntu:21.04'
+          #- 'debian:10'
+          # ^^ Disabled, I have no idea how to get rid of this:
+          # > pkg_resources.VersionConflict: (setuptools 40.8.0 (/usr/lib/python3/dist-packages), Requirement.parse('setuptools>=45'))
+
+    container: ${{ matrix.image }}
+
+    steps:
+      - name: Install dependencies via apt
+        run: |
+          set -ex
+          export DEBIAN_FRONTEND=noninteractive
+          apt update
+          apt-cache --generate pkgnames \
+            | grep --line-regexp --fixed-strings \
+              -e git \
+              -e python-pip-whl \
+              -e python3-cram \
+              -e python3-flake8 \
+              -e python3-isort \
+              -e python3-mypy \
+              -e python3-pandas \
+              -e python3-pep517 \
+              -e python3-pip \
+              -e python3-pyls \
+              -e python3-pytest \
+              -e python3-venv \
+              -e twine \
+            | xargs apt install -y
+      - uses: actions/checkout@v2
+      - name: Install remaining dependencies
+        run: make venv
+      - name: flake8
+        uses: liskin/gh-problem-matcher-wrap@v1
+        with:
+          linters: flake8
+          run: make lint-flake8
+      - name: mypy
+        uses: liskin/gh-problem-matcher-wrap@v1
+        with:
+          linters: mypy
+          run: make lint-mypy
+      - name: isort
+        uses: liskin/gh-problem-matcher-wrap@v1
+        with:
+          linters: isort
+          run: make lint-isort
+      - name: pytest
+        uses: liskin/gh-problem-matcher-wrap@v1
+        with:
+          linters: pytest
+          run: make test
+      - name: readme
+        run: make readme

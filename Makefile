@@ -68,6 +68,7 @@ clean:
 $(VENV_DONE): $(MAKEFILE_LIST) setup.py setup.cfg pyproject.toml
 	$(PYTHON) -m venv --system-site-packages --without-pip $(VENV)
 	$(VENV_PYTHON) -m pip --version || $(PYTHON) -m venv --system-site-packages $(VENV)
+	$(VENV_PYTHON) -m pip install 'pip >= 20.3'
 	$(VENV_PYTHON) -m pip install -e $(VENV_PIP_INSTALL)
 	touch $@
 
