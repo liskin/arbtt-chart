@@ -52,7 +52,7 @@ def load_inputs(csvs):
 
         category, table = extract_category(table)
         if category in inputs:
-            inputs[category] = inputs[category].add(table, fill_value=0)
+            inputs[category] = inputs[category].add(table, fill_value=pd.Timedelta(0))
         else:
             inputs[category] = table
 
