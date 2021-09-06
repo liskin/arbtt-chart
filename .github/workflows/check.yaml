@@ -81,13 +81,11 @@ jobs:
       matrix:
         image:
           - 'debian:unstable'
-          - 'debian:bullseye'
+          - 'debian:bookworm'
+          - 'debian:11'
           - 'ubuntu:20.04'
           - 'ubuntu:20.10'
           - 'ubuntu:21.04'
-          #- 'debian:10'
-          # ^^ Disabled, I have no idea how to get rid of this:
-          # > pkg_resources.VersionConflict: (setuptools 40.8.0 (/usr/lib/python3/dist-packages), Requirement.parse('setuptools>=45'))
 
     container: ${{ matrix.image }}
 
