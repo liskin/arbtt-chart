@@ -52,7 +52,7 @@ readme: README.md
 %.md: INTERACTIVE=$(shell [ -t 0 ] && echo --interactive)
 %.md: $(VENV_DONE) _phony
 	PATH="$(CURDIR)/$(VENV)/bin:$$PATH" \
-	$(VENV_PYTHON) cram-noescape.py --indent=4 $(INTERACTIVE) README.md
+	$(VENV_PYTHON) cram-noescape.py --indent=4 --shell=/bin/bash $(INTERACTIVE) README.md
 
 .PHONY: dist
 dist: $(VENV_DONE)

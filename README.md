@@ -71,6 +71,12 @@ python3-pandas` and run `arbtt_chart.py` directly. :-)
 
 ## Usage
 
+<!-- argparse < 3.10 compat: https://bugs.python.org/issue9694
+    $ function arbtt-chart {
+    >   command arbtt-chart "$@" | sed -e 's/optional arguments:/options:/'
+    > }
+-->
+
     $ arbtt-chart --help
     usage: arbtt-chart [-h] [--no-stacked] [--subtags] [--totals-re RE]
     
@@ -78,7 +84,7 @@ python3-pandas` and run `arbtt_chart.py` directly. :-)
     format=csv --category=…` or `arbtt-stats --output-format=csv --each-category`
     output on stdin.
     
-    optional arguments:
+    options:
       -h, --help      show this help message and exit
       --no-stacked    don't stack bar chart
       --subtags       recognize subtags (separated by '-') and sort them together
