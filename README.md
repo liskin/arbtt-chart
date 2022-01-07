@@ -77,6 +77,10 @@ python3-pandas` and run `arbtt_chart.py` directly. :-)
     > }
 -->
 
+<!-- pandas/numexpr compat :-(
+    $ export PYTHONWARNINGS="ignore"
+-->
+
     $ arbtt-chart --help
     usage: arbtt-chart [-h] [--no-stacked] [--subtags] [--totals-re RE]
     
