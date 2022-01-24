@@ -1,3 +1,4 @@
+from math import nan
 import textwrap
 
 import pandas as pd  # type: ignore [import]
@@ -25,9 +26,9 @@ def test_prepare():
     out1 = pd.DataFrame(
         {'Time': ['', '', '00:02:00', '00:01:00', '', '00:03:00'],
          'Type': ['text', 'text', 'bar', 'bar', 'text', 'total_bar'],
-         'Frac': [None, None, 2/3, 1/3, None, 1],
-         'FracAbove': [None, None, 0, 2/3, None, 0],
-         'HourFrac': [None, None, 20, 20, None, 20]},
+         'Frac': [nan, nan, 2/3, 1/3, nan, 1],
+         'FracAbove': [nan, nan, 0, 2/3, nan, 0],
+         'HourFrac': [nan, nan, 20, 20, nan, 20]},
         index=pd.Index(['a', '═', '(unmatched time)', 'x-y', '', '(total time)'], name='Tag'))
     pdt.assert_frame_equal(prep([in1]), out1)
 
@@ -59,7 +60,7 @@ def test_prepare():
         (total time),00:03:00
         """
     blank = pd.DataFrame(
-        {'Time': [''], 'Type': ['text'], 'Frac': [None], 'FracAbove': [None], 'HourFrac': [None]},
+        {'Time': [''], 'Type': ['text'], 'Frac': [nan], 'FracAbove': [nan], 'HourFrac': [nan]},
         index=pd.Index([''], name='Tag'))
     out2 = out1.set_index(
         pd.Index(['b', '═', '(unmatched time)', 'z', '', '(total time)'], name='Tag'))
