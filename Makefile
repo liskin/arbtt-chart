@@ -48,11 +48,20 @@ test: $(VENV_DONE)
 
 .PHONY: readme
 readme: README.md
+	git diff --exit-code $^
 
-%.md: INTERACTIVE=$(shell [ -t 0 ] && echo --interactive)
-%.md: $(VENV_DONE) _phony
+CRAM_TARGETS := $(wildcard .readme.md/*.md)
+
+.PHONY: $(CRAM_TARGETS)
+$(CRAM_TARGETS) &: INTERACTIVE=$(shell [ -t 0 ] && echo --interactive)
+$(CRAM_TARGETS) &: $(VENV_DONE)
 	PATH="$(CURDIR)/$(VENV)/bin:$$PATH" \
-	$(VENV_PYTHON) cram-noescape.py --indent=4 --shell=/bin/bash $(INTERACTIVE) README.md
+	$(VENV_PYTHON) cram-noescape.py --indent=4 --shell=/bin/bash $(INTERACTIVE) $(CRAM_TARGETS)
+
+.PHONY: README.md
+README.md: $(CRAM_TARGETS)
+	.readme.md/include.py < $@ > $@.tmp
+	mv -f $@.tmp $@
 
 .PHONY: dist
 dist: $(VENV_DONE)
@@ -91,5 +100,3 @@ $(VENV_DONE): $(MAKEFILE_LIST) setup.py setup.cfg pyproject.toml
 	$(if $(VENV_USE_SYSTEM_SITE_PACKAGES),$(VENV_CREATE_SYSTEM_SITE_PACKAGES),$(VENV_CREATE))
 	$(VENV_PYTHON) -m pip install -e $(VENV_PIP_INSTALL)
 	touch $@
-
-.PHONY: _phony
