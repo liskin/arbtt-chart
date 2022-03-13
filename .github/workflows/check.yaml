@@ -101,6 +101,7 @@ jobs:
           apt-cache --generate pkgnames \
             | grep --line-regexp --fixed-strings \
               -e git \
+              -e python3-build \
               -e python3-cram \
               -e python3-flake8 \
               -e python3-isort \
