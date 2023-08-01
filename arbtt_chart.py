@@ -83,9 +83,9 @@ def preprocess(category, table, args):
 
 def blank(df):
     some_name = df.index[0]
-    if type(some_name) == tuple:
+    if isinstance(some_name, tuple):
         name = tuple('' for _ in some_name)
-    elif type(some_name) == str:
+    elif isinstance(some_name, str):
         name = ''
     else:
         raise Exception(f"blank: unexpected type ({type(some_name)})")
