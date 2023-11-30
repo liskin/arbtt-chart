@@ -37,7 +37,7 @@ pip install arbtt-chart
 
 ## Usage
 
-<!-- include .readme.md/help.md -->
+<!-- include tests/readme/help.md -->
     $ arbtt-chart --help
     Usage: arbtt-chart [OPTIONS]
     
@@ -58,7 +58,7 @@ which is located at `~/.config/arbtt_chart/config.yaml` by default
 
 Sample config file can be generated using the `--config-sample` flag:
 
-<!-- include .readme.md/config-sample.md -->
+<!-- include tests/readme/config-sample.md -->
     $ arbtt-chart --config-sample
 <!-- end include -->
 
