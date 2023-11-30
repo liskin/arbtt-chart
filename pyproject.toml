@@ -7,11 +7,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arbtt-chart"
-dynamic = ["version"]
+description = "Plot charts from arbtt-stats to terminal"
 authors = [{name = "Tomáš Janoušek", email = "tomi@nomi.cz"}]
 license = {text = "MIT"}
-description = '"Plot charts from arbtt-stats to terminal"'
-classifiers = [
+readme = {file="README.md", content-type="text/markdown"}
+dynamic = ["version"]
+classifiers = [ # https://pypi.org/classifiers/
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "License :: OSI Approved :: MIT License",
@@ -28,10 +29,6 @@ requires-python = "~= 3.8"
 dependencies = [
     "pandas >= 1.0.0",
 ]
-
-[project.readme]
-file = "README.md"
-content-type = "text/markdown"
 
 [project.optional-dependencies]
 dev = [

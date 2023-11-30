@@ -1,10 +1,12 @@
 # arbtt-chart
 
-**Textual chart for [arbtt][], the automatic, rule-based time tracker.**
-
 [![PyPI Python Version badge](https://img.shields.io/pypi/pyversions/arbtt-chart)](https://pypi.org/project/arbtt-chart/)
 [![PyPI Version badge](https://img.shields.io/pypi/v/arbtt-chart)](https://pypi.org/project/arbtt-chart/)
 ![License badge](https://img.shields.io/github/license/liskin/arbtt-chart)
+
+## Overview
+
+**Textual chart for [arbtt][], the automatic, rule-based time tracker.**
 
 Similar to [arbtt-graph][], just in plain monospace text.
 
@@ -46,7 +48,7 @@ Using [pipx][]:
 
 ```
 pipx ensurepath
-pipx install git+https://github.com/liskin/arbtt-chart
+pipx install arbtt-chart
 ```
 
 To keep a local git clone around:
@@ -60,13 +62,13 @@ Alternatively, if you don't need the isolated virtualenv that [pipx][]
 provides, feel free to just:
 
 ```
-pip install git+https://github.com/liskin/arbtt-chart
+pip install arbtt-chart
 ```
 
 Or, since the only dependency is [pandas][], you can just `sudo apt install
 python3-pandas` and run `arbtt_chart.py` directly. :-)
 
-[pipx]: https://github.com/pipxproject/pipx
+[pipx]: https://github.com/pypa/pipx
 [pandas]: https://pandas.pydata.org/
 
 ## Usage

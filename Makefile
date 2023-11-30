@@ -58,10 +58,12 @@ readme: README.md
 CRAM_TARGETS := $(wildcard .readme.md/*.md)
 
 .PHONY: $(CRAM_TARGETS)
-$(CRAM_TARGETS) &: INTERACTIVE=$(shell [ -t 0 ] && echo --interactive)
+$(CRAM_TARGETS) &: CRAM_INTERACTIVE=$(shell [ -t 0 ] && echo --interactive)
 $(CRAM_TARGETS) &: $(VENV_DONE)
 	PATH="$(CURDIR)/$(VENV)/bin:$$PATH" \
-	$(VENV_PYTHON) cram-noescape.py --indent=4 --shell=/bin/bash $(INTERACTIVE) $(CRAM_TARGETS)
+	XDG_DATA_HOME=/home/user/.local/share \
+	XDG_CONFIG_HOME=/home/user/.config \
+	$(VENV_PYTHON) cram-noescape.py --indent=4 --shell=/bin/bash $(CRAM_INTERACTIVE) $(CRAM_TARGETS)
 
 .PHONY: README.md
 README.md: $(CRAM_TARGETS)
