@@ -46,6 +46,22 @@ test = [
 [project.scripts]
 arbtt-chart = "arbtt_chart:main"
 
+[tool.gha-check-distro]
+dependencies-apt = [
+    "python3-build",
+    "python3-cram",
+    "python3-flake8",
+    "python3-isort",
+    "python3-mypy",
+    "python3-pandas",
+    "python3-pip",
+    "python3-pip-whl",
+    "python3-pytest",
+    "python3-typeshed",
+    "python3-venv",
+    "twine",
+]
+
 [tool.setuptools_scm]
 
 [tool.setuptools]
@@ -58,5 +74,8 @@ show_error_codes = true
 
 [tool.isort]
 profile = "open_stack"
+
+[tool.ruff]
+line-length = 120
 
 # vim:set et:

@@ -73,7 +73,7 @@ python3-pandas` and run `arbtt_chart.py` directly. :-)
 
 ## Usage
 
-<!-- include .readme.md/help.md -->
+<!-- include tests/readme/help.md -->
 <!-- common
     $ . "$TESTDIR"/common.sh
 -->
@@ -178,7 +178,7 @@ app_element_io       00:14:40  ···········÷··········÷·�
 
 ### custom inputs
 
-<!-- include .readme.md/custom.md -->
+<!-- include tests/readme/custom.md -->
 <!-- common
     $ . "$TESTDIR"/common.sh
 -->
@@ -211,7 +211,7 @@ app_element_io       00:14:40  ···········÷··········÷·�
 
 ### custom inputs, multiple tables at same scale
 
-<!-- include .readme.md/custom-multitable.md -->
+<!-- include tests/readme/custom-multitable.md -->
 <!-- common
     $ . "$TESTDIR"/common.sh
 -->
