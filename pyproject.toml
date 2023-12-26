@@ -32,10 +32,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "build >= 0.7",
-    "cram",
     "flake8 >= 3.7.0",
     "isort >= 5.0",
     "mypy >= 0.900",
+    "prysk == 0.16.0",
     "twine",
 ]
 test = [
@@ -56,7 +56,6 @@ arbtt-chart = "arbtt_chart:main"
 [tool.gha-check-distro]
 dependencies-apt = [
     "python3-build",
-    "python3-cram",
     "python3-flake8",
     "python3-isort",
     "python3-mypy",
