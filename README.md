@@ -96,7 +96,7 @@ python3-pandas` and run `arbtt_chart.py` directly. :-)
       --no-stacked    don't stack bar chart
       --subtags       recognize subtags (separated by '-') and sort them together
       --totals-re RE  totals row regexp, default: ^\(total time\)$
-<!-- end include -->
+<!-- end include tests/readme/help.md -->
 
 ## Examples
 
@@ -207,7 +207,7 @@ app_element_io       00:14:40  ···········÷··········÷·�
                                                                                     
     (screen)   05:40:00  ████████▓███████▓███████▓███████▓████████▓████▊··÷·······÷·
     (outside)  01:30:00  ████████▓███▍···÷·······÷·······÷········÷·······÷·······÷·
-<!-- end include -->
+<!-- end include tests/readme/custom.md -->
 
 ### custom inputs, multiple tables at same scale
 
@@ -244,4 +244,23 @@ app_element_io       00:14:40  ···········÷··········÷·�
     Commute       00:30:00  ·········▕████▊····÷·········÷·········÷·········÷······
                                                                                     
     (total time)  01:30:00  █████████▓████▉····÷·········÷·········÷·········÷······
-<!-- end include -->
+<!-- end include tests/readme/custom-multitable.md -->
+
+## Contributing
+
+### Code
+
+We welcome bug fixes, (reasonable) new features, documentation improvements,
+and more. Submit these as GitHub pull requests. Use GitHub issues to report
+bugs and discuss non-trivial code improvements; alternatively, get in touch
+via [IRC/Matrix/Fediverse](https://work.lisk.in/contact/).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details about the code base
+(including running tests locally).
+
+Note that this project was born out of a desire to solve a problem I was
+facing. While I'm excited to share it with the world, keep in mind that I'll
+be prioritizing features and bug fixes that align with my personal use cases.
+There may be times when I'm busy with other commitments and replies to
+contributions might be delayed, or even occasionally missed. Progress may come
+in bursts. Adjust your expectations accordingly.

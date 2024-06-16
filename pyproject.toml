@@ -32,6 +32,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "build >= 0.7",
+    "click ~= 8.0",
     "flake8 >= 3.7.0",
     "isort >= 5.0",
     "mypy >= 0.900",
@@ -56,6 +57,7 @@ arbtt-chart = "arbtt_chart:main"
 [tool.gha-check-distro]
 dependencies-apt = [
     "python3-build",
+    "python3-click",
     "python3-flake8",
     "python3-isort",
     "python3-mypy",
