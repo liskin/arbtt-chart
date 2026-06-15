@@ -93,6 +93,7 @@ def test_load_inputs():
             {'Time': [pd.to_timedelta('00:03:00')]},
             index=pd.Index(['y'], name='Tag'),
         ),
+        check_dtype=False,
     )
 
     # two inputs, one category

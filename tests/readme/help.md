@@ -2,12 +2,6 @@
     $ . "$TESTDIR"/common.sh
 -->
 
-<!-- argparse < 3.10 compat: https://bugs.python.org/issue9694
-    $ function arbtt-chart {
-    >   command arbtt-chart "$@" | sed -e 's/optional arguments:/options:/'
-    > }
--->
-
     $ arbtt-chart --help
     usage: arbtt-chart [-h] [--no-stacked] [--subtags] [--totals-re RE]
     

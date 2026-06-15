@@ -44,30 +44,30 @@ Raw `arbtt-stats` output for the same time period looks something like this:
 
 ## Installation
 
+Using [uv][]:
+
+```console
+$ uv tool install arbtt-chart
+```
+
 Using [pipx][]:
 
-```
-pipx ensurepath
-pipx install arbtt-chart
-```
-
-To keep a local git clone around:
-
-```
-git clone https://github.com/liskin/arbtt-chart
-make -C arbtt-chart pipx
+```console
+$ pipx ensurepath
+$ pipx install arbtt-chart
 ```
 
-Alternatively, if you don't need the isolated virtualenv that [pipx][]
-provides, feel free to just:
+From a git clone:
 
-```
-pip install arbtt-chart
+```console
+$ git clone https://github.com/liskin/arbtt-chart
+$ uv tool install ./arbtt-chart
 ```
 
 Or, since the only dependency is [pandas][], you can just `sudo apt install
 python3-pandas` and run `arbtt_chart.py` directly. :-)
 
+[uv]: https://docs.astral.sh/uv/
 [pipx]: https://github.com/pypa/pipx
 [pandas]: https://pandas.pydata.org/
 
@@ -76,12 +76,6 @@ python3-pandas` and run `arbtt_chart.py` directly. :-)
 <!-- include tests/readme/help.md -->
 <!-- common
     $ . "$TESTDIR"/common.sh
--->
-
-<!-- argparse < 3.10 compat: https://bugs.python.org/issue9694
-    $ function arbtt-chart {
-    >   command arbtt-chart "$@" | sed -e 's/optional arguments:/options:/'
-    > }
 -->
 
     $ arbtt-chart --help
@@ -253,7 +247,7 @@ app_element_io       00:14:40  ···········÷··········÷·�
 We welcome bug fixes, (reasonable) new features, documentation improvements,
 and more. Submit these as GitHub pull requests. Use GitHub issues to report
 bugs and discuss non-trivial code improvements; alternatively, get in touch
-via [IRC/Matrix/Fediverse](https://work.lisk.in/contact/).
+via [IRC/Fediverse/email](https://work.lisk.in/contact/).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details about the code base
 (including running tests locally).
