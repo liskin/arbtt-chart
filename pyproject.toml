@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools >= 64.0",
+    "setuptools >= 77.0.3",
     "setuptools_scm[toml] >= 6.2",
 ]
 build-backend = "setuptools.build_meta"
@@ -9,42 +9,36 @@ build-backend = "setuptools.build_meta"
 name = "arbtt-chart"
 description = "FIXME"
 authors = [{name = "Tomáš Janoušek", email = "tomi@nomi.cz"}]
-license = {text = "MIT"}
+license = "MIT"
 readme = {file="README.md", content-type="text/markdown"}
 dynamic = ["version"]
 classifiers = [ # https://pypi.org/classifiers/
     # FIXME: "Development Status :: …",
     "Environment :: Console",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     # FIXME: "Topic :: …",
 ]
-requires-python = "~= 3.8"
+requires-python = ">= 3.10"
 dependencies = [
-    "PyYAML",
-    "click ~= 8.0",
-    "click-config-file",
-    "importlib-metadata; python_version<'3.10'",
+    "PyYAML >= 5.1",
+    "click >= 8.1.1",
+    "click-config-file >= 0.6.0",
     "platformdirs >= 2.1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "build >= 0.7",
-    "flake8",
-    "isort >= 5.0",
-    "mypy >= 0.900",
+    "flake8 >= 6.1",
+    "isort >= 5.1",
+    "mypy >= 1.0",
     "prysk >= 0.20.0",
-    "twine",
-    "types-PyYAML",
-]
-test = [
-    "pytest",
+    "pytest >= 7.0",
+    "types-PyYAML >= 5.4.0",
 ]
 
 [project.urls]
@@ -60,21 +54,20 @@ arbtt-chart = "arbtt_chart.cli:cli"
 
 [tool.gha-check-distro]
 dependencies-apt = [
-    "python3-build",
+    "jq",
+    "just",
     "python3-click",
     "python3-configobj",
     "python3-flake8",
-    "python3-importlib-metadata",
     "python3-isort",
     "python3-mypy",
     "python3-pip",
-    "python3-pip-whl",
     "python3-platformdirs",
     "python3-pytest",
+    "python3-rich",
     "python3-typeshed",
     "python3-venv",
     "python3-yaml",
-    "twine",
 ]
 
 [tool.setuptools_scm]

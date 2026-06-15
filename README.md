@@ -12,32 +12,36 @@ arbtt-chart is a …
 
 ## Installation
 
+Using [uv][]:
+
+```console
+$ uv tool install arbtt-chart
+```
+
 Using [pipx][]:
 
-```
-pipx ensurepath
-pipx install arbtt-chart
-```
-
-To keep a local git clone around:
-
-```
-git clone https://github.com/liskin/arbtt-chart
-make -C arbtt-chart pipx
+```console
+$ pipx ensurepath
+$ pipx install arbtt-chart
 ```
 
-Alternatively, if you don't need the isolated virtualenv that [pipx][]
-provides, feel free to just:
+From a git clone:
 
-```
-pip install arbtt-chart
+```console
+$ git clone https://github.com/liskin/arbtt-chart
+$ uv tool install ./arbtt-chart
 ```
 
+[uv]: https://docs.astral.sh/uv/
 [pipx]: https://github.com/pypa/pipx
 
 ## Usage
 
 <!-- include tests/readme/help.md -->
+<!--
+    $ . "$TESTDIR"/../.xdg-user.sh
+-->
+
     $ arbtt-chart --help
     Usage: arbtt-chart [OPTIONS]
     
@@ -59,6 +63,10 @@ which is located at `~/.config/arbtt_chart/config.yaml` by default
 Sample config file can be generated using the `--config-sample` flag:
 
 <!-- include tests/readme/config-sample.md -->
+<!--
+    $ . "$TESTDIR"/../.xdg-user.sh
+-->
+
     $ arbtt-chart --config-sample
 <!-- end include tests/readme/config-sample.md -->
 
@@ -69,7 +77,7 @@ Sample config file can be generated using the `--config-sample` flag:
 We welcome bug fixes, (reasonable) new features, documentation improvements,
 and more. Submit these as GitHub pull requests. Use GitHub issues to report
 bugs and discuss non-trivial code improvements; alternatively, get in touch
-via [IRC/Matrix/Fediverse](https://work.lisk.in/contact/).
+via [IRC/Fediverse/email](https://work.lisk.in/contact/).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details about the code base
 (including running tests locally).

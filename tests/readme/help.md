@@ -1,3 +1,7 @@
+<!--
+    $ . "$TESTDIR"/../.xdg-user.sh
+-->
+
     $ arbtt-chart --help
     Usage: arbtt-chart [OPTIONS]
     

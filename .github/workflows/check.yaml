@@ -8,9 +8,12 @@ on:
     # Re-test every month
     - cron: '0 2 1 * *'
 
+permissions:
+  contents: read
+
 env:
-  # more verbosity to make it easier to understand failures
-  PYTEST_FLAGS: -v --log-level=DEBUG
+  # dependency cooldown to mitigate supply chain attacks
+  UV_EXCLUDE_NEWER: '1 week'
 
 jobs:
   check:
@@ -19,63 +22,64 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version:
-          - '3.8'
-          - '3.9'
-          - '3.10'
-          - '3.11'
-          - '3.12'
+        include:
+          - python-version: '3.10'
+          - python-version: '3.11'
+          - python-version: '3.12'
+          - python-version: '3.13'
+          - python-version: '3.14'
+          - python-version: '3.10'
+            uv-resolution: lowest-direct
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Set UV_RESOLUTION
+        env:
+          UV_RESOLUTION: ${{ matrix.uv-resolution }}
+        run: |
+          if [[ $UV_RESOLUTION ]]; then
+            echo UV_RESOLUTION="$UV_RESOLUTION" >> $GITHUB_ENV
+          fi
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python-version }}
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-      - name: Persistent Github pip cache
-        uses: actions/cache@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'setup.cfg', 'setup.py', 'Makefile') }}
-          restore-keys: |
-            pip-${{ runner.os }}-${{ matrix.python-version }}-
-            pip-${{ runner.os }}-
-      - name: Persistent Github venv cache
-        uses: actions/cache@v4
-        with:
-          path: .venv/
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('pyproject.toml', 'setup.cfg', 'setup.py', 'Makefile') }}
+          add-problem-matchers: 'false'
+      - name: Install just
+        uses: taiki-e/install-action@just
       - name: Install dependencies
-        run: make venv
+        run: just --color=always venv
       - name: flake8
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: flake8
-          run: make lint-flake8
+          run: just --color=always lint-flake8
       - name: mypy
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: mypy
-          run: make lint-mypy
+          run: just --color=always lint-mypy
       - name: isort
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: isort
-          run: make lint-isort
+          run: just --color=always lint-isort
       - name: pytest
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: pytest
-          run: make test-pytest
+          # more pytest verbosity to make it easier to understand failures
+          run: just --color=always test-pytest -v --log-level=DEBUG
       - name: prysk, readme
-        run: make test-prysk readme
-      - name: check-wheel
-        run: make check-wheel
+        run: just --color=always readme-diff
+      - name: smoke-dist
+        run: just --color=always smoke-dist
 
   check-distro:
     runs-on: ubuntu-latest
@@ -101,13 +105,19 @@ jobs:
         run: |
           set -ex
           apt update
+          apt full-upgrade -y # apt solver 3.0 won't upgrade package to install recommends
           apt install -y git
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Workaround for https://github.com/actions/checkout/issues/1169
+        run: git config --global --add safe.directory "$PWD"
       - name: Install dependencies via apt
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -ex
+
           deps=$(sed -n '/^\[tool.gha-check-distro\]/,/^\[/p' pyproject.toml \
             | tr '\n' ' ' \
             | grep -o -P '\sdependencies-apt\s*=\s*\K\[.*?\]' \
@@ -116,55 +126,55 @@ jobs:
           apt-cache --generate pkgnames \
             | grep --line-regexp --fixed-strings "$deps" \
             | xargs apt install -y
-      - name: Workaround for https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1057968
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        shell: bash
+
+          echo '# apt-installed python* packages' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          apt list --installed 'python*' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          add-problem-matchers: 'false'
+      - name: Install just
+        uses: taiki-e/install-action@just
+        # ^ TODO: drop in favor of apt once Ubuntu 26.04 and Debian 14 are released
+      - name: Install remaining dependencies
         run: |
           set -ex
-          grep "Suites: noble" /etc/apt/sources.list.d/ubuntu.sources || exit 0
-          apt install -y debian-archive-keyring
-          ln -s /usr/share/keyrings/debian-archive-keyring.gpg /etc/apt/trusted.gpg.d/
-          python3_pycodestyle=$(dpkg-query --showformat='${Version}\n' --show python3-pycodestyle)
-          python3_flake8=$(dpkg-query --showformat='${Version}\n' --show python3-flake8)
-          if [[ $python3_pycodestyle == 2.11.* && $python3_flake8 == 5.* ]]; then
-            echo 'deb https://deb.debian.org/debian unstable main' >/etc/apt/sources.list.d/debian-unstable.list
-            echo 'APT::Default-Release "noble";' >/etc/apt/apt.conf.d/debian-release
-            apt update
-            apt install -t unstable -y python3-flake8
-          fi
-      - name: Workaround for https://github.com/actions/checkout/issues/1169
-        run: git config --global --add safe.directory "$PWD"
-      - name: Install remaining dependencies
-        run: make venv-system-site-packages
+
+          just --color=always venv-system-site-packages
+
+          echo '# pip-installed packages' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          uv pip list >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
       - name: flake8
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: flake8
-          run: make lint-flake8
+          run: just --color=always lint-flake8
       - name: mypy
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: mypy
-          run: make lint-mypy
+          run: just --color=always lint-mypy
       - name: isort
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: isort
-          run: make lint-isort
+          run: just --color=always lint-isort
       - name: pytest
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@v4
         with:
           linters: pytest
-          run: make test-pytest
+          # more pytest verbosity to make it easier to understand failures
+          run: just --color=always test-pytest -v --log-level=DEBUG
       - name: prysk, readme
-        run: make readme
-      - name: check-wheel
-        run: make check-wheel
+        run: just --color=always readme-diff
 
   workflow-keepalive:
     if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       actions: write
     steps:
