@@ -33,12 +33,10 @@ jobs:
 
     steps:
       - name: Set UV_RESOLUTION
+        if: matrix.uv-resolution
         env:
           UV_RESOLUTION: ${{ matrix.uv-resolution }}
-        run: |
-          if [[ $UV_RESOLUTION ]]; then
-            echo UV_RESOLUTION="$UV_RESOLUTION" >> $GITHUB_ENV
-          fi
+        run: echo UV_RESOLUTION="$UV_RESOLUTION" >> $GITHUB_ENV
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
